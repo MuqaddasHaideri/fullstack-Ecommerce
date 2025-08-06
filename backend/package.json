@@ -2,9 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "service.js",
-     "type":"module",
+  "type": "module",
   "scripts": {
-       "start": "nodemon server.js"
+    "start": "nodemon service.js"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +19,8 @@
     "joi": "^18.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
