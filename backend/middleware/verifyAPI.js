@@ -8,7 +8,7 @@ export const isAuthenticated = async (req, res, next) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    const token = authHeader.split(" ")[1]; // extract token from 'Bearer <token>'
+    const token = authHeader.split(" ")[1]; 
     console.log("Checking bearer token:", token);
 
     const decoded = jwt.verify(token, process.env.JWT_KEY);
@@ -18,6 +18,7 @@ export const isAuthenticated = async (req, res, next) => {
     }
 
     req.user = decoded;
+    
     next();
   } catch (error) {
     console.log("Error in isAuthenticated:", error);

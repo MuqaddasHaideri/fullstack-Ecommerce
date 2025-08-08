@@ -2,7 +2,7 @@ import UserSchemaModel from "../models/userSchema.js";
 import bcrpt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-export const loginController = async ( req,res) => {
+export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -15,7 +15,7 @@ export const loginController = async ( req,res) => {
     }
 
     //checking for user if they exists
-const userExists = await UserSchemaModel.findOne({ email });
+    const userExists = await UserSchemaModel.findOne({ email });
 
     if (!userExists) {
       return res.status(403).json({
@@ -47,6 +47,7 @@ const userExists = await UserSchemaModel.findOne({ email });
       jwt_token,
       name: userExists.name,
       email,
+      _id:userExists._id
     });
   } catch (error) {
     console.log("error in login controller : ", error);
