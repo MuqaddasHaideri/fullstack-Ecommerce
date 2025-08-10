@@ -4,6 +4,7 @@ import cors from "cors"
 import {start} from "./models/db.js"
 import router from "./router/authRouter.js";
 import bodyParser from "body-parser";
+import productRouter from "./router/productRouter.js";
 dotenv.config();
 
 const app = express();
@@ -13,9 +14,11 @@ app.use(cors());
 
 start(); //for starting db 
  
-
+app.use(express.json());  
 
 app.use("/auth", router);
+app.use("/api", productRouter);
+
 app.listen(PORT, () => {
   console.log(`Server is running on port = ${PORT}`);
 });
