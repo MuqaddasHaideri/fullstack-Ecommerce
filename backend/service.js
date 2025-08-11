@@ -16,9 +16,9 @@ start(); //for starting db
  
 app.use(express.json());  
 
-app.use("/auth", router);
+app.use("/api/auth", router);
 app.use("/api", productRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port = ${PORT}`);
 });
