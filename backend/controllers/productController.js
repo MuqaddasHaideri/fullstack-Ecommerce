@@ -32,4 +32,27 @@ const category = async (req, res) => {
         res.status(500).json({ message: "Error in getting categories" });
     }
 }
-export { getProducts, productById, productbycategory, category };
+
+const searchProduct = async (req, res) => {
+    try {
+        const { query } = req.query; 
+        
+        if (!query) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+
+        const products = await ProductSchemaModel.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("Error searching products:", error);
+        res.status(500).json({ message: "Error in searching products" });
+    }
+}
+
+export { getProducts, productById, productbycategory, category,searchProduct };
