@@ -8,9 +8,9 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import Crousal from "@/components/Crousal";
+// import Crousal from "@/components/Crousal";
 import { Colors } from "@/constants/Colors";
-import Catagory from "@/components/Catagory";
+// import Catagory from "@/components/Catagory";
 const { width } = Dimensions.get("window");
 
 
@@ -47,10 +47,10 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Banner Carousel */}
+      {/* Banner Carousel
       <Crousal/>
       {/* Categories */}
-  <Catagory/>
+  {/* <Catagory/>  */}
       {/* Products Grid */}
       <FlatList
         data={products}
