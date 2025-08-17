@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { View, FlatList, Image, Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 
+
 const { width } = Dimensions.get("window");
 
 const images = [
