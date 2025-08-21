@@ -11,6 +11,7 @@ import {
 import Crousal from "@/components/Crousal";
 import { Colors } from "@/constants/Colors";
 import Catagory from "@/components/Catagory";
+import { router } from "expo-router";
 const { width } = Dimensions.get("window");
 
 
@@ -36,9 +37,11 @@ export default function HomeScreen() {
   //     <Text style={styles.categoryText}>{item.name}</Text>
   //   </View>
   // );
-
+  const handleProductDetail =()=>{
+    router.push("/Screens/ProductDetail");
+  }
   const renderProduct = ({ item }: { item: any }) => (
-    <TouchableOpacity style={styles.productCard}>
+    <TouchableOpacity style={styles.productCard} onPress={handleProductDetail}>
       <Image source={item.image} style={styles.productImage} />
       <Text style={styles.productName}>{item.name}</Text>
       <Text style={styles.productPrice}>{item.price}</Text>
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
 
 
   productCard: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.text,
     borderRadius: 8,
     marginBottom: 15,
     flex: 1,
@@ -93,10 +96,11 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
+    color: Colors.background,
   },
   productPrice: {
-    fontSize: 12,
-    color: "#ff5733",
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: "600",
   },
 });

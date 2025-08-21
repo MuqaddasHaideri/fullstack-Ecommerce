@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useSelector } from 'react-redux';
+import { router } from 'expo-router';
 
 const Catagory = () => {
   const [categories, setCategories] = useState<any[]>([]);
@@ -57,9 +58,12 @@ const Catagory = () => {
   }, [token]); // refetch when token changes
 
   const renderCategory = ({ item }: { item: any }) => (
+    // <TouchableOpacity onPress={handleProductDetail}>
     <View style={styles.categoryItem}>
+   
       <Text style={styles.categoryText}>{item.name || item}</Text>
     </View>
+      //  </TouchableOpacity>
   );
 
   if (loading) {

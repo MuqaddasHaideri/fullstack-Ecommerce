@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 80, // move profile image more down from top
+    paddingTop: 80, 
     backgroundColor: Colors.background,
   },
   profileImage: {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.smallText,
     marginBottom: 30,
-    color: Colors.text,
+    // color: Colors.text,
     
   },
   buttonContainer: {
