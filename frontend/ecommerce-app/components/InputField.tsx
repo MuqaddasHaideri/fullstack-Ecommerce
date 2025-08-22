@@ -9,6 +9,7 @@ type Props = TextInputProps & {
 const InputField = ({ icon, secureTextEntry, ...rest }: Props) => {
   const [hidePassword, setHidePassword] = useState(secureTextEntry);
 
+  
   return (
     <View style={styles.container}>
       <MaterialIcons name={icon} size={20} color="#888" />
