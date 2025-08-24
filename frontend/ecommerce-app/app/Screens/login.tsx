@@ -25,35 +25,35 @@ const dispatch = useDispatch();
   const [password, setPassword] = useState('')
 
   const handleSignIn = async () => {
-    // if (!email || !password) {
-    //   Alert.alert("Error", "Please fill in all fields");
-    //   return;
-    // }
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
 
-    // try {
-    //   const response = await axios.post(`${API_BASE}/api/auth/login`, {
-    //     email,
-    //     password,
-    //   });
+    try {
+      const response = await axios.post(`${API_BASE}/api/auth/login`, {
+        email,
+        password,
+      });
 
-    //   if (response.data.success) {
-    //     dispatch(
-    //       setCredentials({
-    //         token: response.data.jwt_token,
-    //         user: {
-    //           name: response.data.name,
-    //           email: response.data.email,
-    //           _id: response.data._id,
-    //         },
-    //       })
-    //     );
+      if (response.data.success) {
+        dispatch(
+          setCredentials({
+            token: response.data.jwt_token,
+            user: {
+              name: response.data.name,
+              email: response.data.email,
+              _id: response.data._id,
+            },
+          })
+        );
         router.push("/(tabs)/Home");
-    //   } else {
-    //     Alert.alert("Error", response.data.message || "Login failed");
-    //   }
-    // } catch (error) {
-    //   Alert.alert("Error", error.response?.data?.message || "Something went wrong");
-    // }
+      } else {
+        Alert.alert("Error", response.data.message || "Login failed");
+      }
+    } catch (error) {
+      Alert.alert("Error", error.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
