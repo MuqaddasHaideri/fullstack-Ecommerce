@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,9 @@ import Crousal from "@/components/Crousal";
 import { Colors } from "@/constants/Colors";
 import Catagory from "@/components/Catagory";
 import { router } from "expo-router";
+import {getProduct} from "@/api/services"
+import { useSelector, useDispatch } from "react-redux";
 const { width } = Dimensions.get("window");
-
 
 // const categories = [
 //   { id: "1", name: "Shoes", image: require("../../assets/images/image1.jpeg") },
@@ -22,24 +23,26 @@ const { width } = Dimensions.get("window");
 //   { id: "4", name: "Clothes", image: require("../../assets/images/image1.jpeg") },
 // ];
 
-const products = Array.from({ length: 20 }, (_, i) => ({
-  id: i.toString(),
-  name: `Product ${i + 1}`,
-  price: `$${(i + 1) * 5}`,
-  image: require("../../assets/images/image3.jpeg"),
-}));
+// const products = Array.from({ length: 20 }, (_, i) => ({
+//   id: i.toString(),
+//   name: `Product ${i + 1}`,
+//   price: `$${(i + 1) * 5}`,
+//   image: require("../../assets/images/image3.jpeg"),
+// }));
+
 
 export default function HomeScreen() {
-
-  // const renderCategory = ({ item }: { item: any }) => (
-  //   <View style={styles.categoryItem}>
-  //     <Image source={item.image} style={styles.categoryImage} />
-  //     <Text style={styles.categoryText}>{item.name}</Text>
-  //   </View>
-  // );
-  const handleProductDetail =()=>{
-    router.push("/Screens/ProductDetail");
+  const token = useSelector((state: any) => state.auth.token);
+  const getAllProducts = async()=>{
+    const response = await getProduct(token);
+    console.log("checking list of product \n",response.data)
   }
+  useEffect (()=>{
+    getAllProducts()
+  },[])
+  const handleProductDetail = () => {
+    router.push("/Screens/ProductDetail");
+  };
   const renderProduct = ({ item }: { item: any }) => (
     <TouchableOpacity style={styles.productCard} onPress={handleProductDetail}>
       <Image source={item.image} style={styles.productImage} />
@@ -51,11 +54,11 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       {/* Banner Carousel */}
-      <Crousal/>
+      <Crousal />
       {/* Categories */}
-  <Catagory/> 
+      <Catagory />
       {/* Products Grid */}
-      <FlatList
+      {/* <FlatList
         data={products}
         renderItem={renderProduct}
         keyExtractor={(item) => item.id}
@@ -63,7 +66,7 @@ export default function HomeScreen() {
         columnWrapperStyle={{ justifyContent: "space-between" }}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
-      />
+      /> */}
     </View>
   );
 }
@@ -75,7 +78,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     paddingHorizontal: 10,
   },
-
 
   productCard: {
     backgroundColor: Colors.text,

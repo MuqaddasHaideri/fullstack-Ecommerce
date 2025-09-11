@@ -17,25 +17,21 @@ import InputField from '@/components/InputField';
 import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '@/redux/authSlice';
+import { loginUser } from '@/api/services';
+import { API_BASE } from '@/api/urls';
 const Login = () => {
-  
 const dispatch = useDispatch();
-  const API_BASE = process.env.EXPO_PUBLIC_BASE_URL!;
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('muqaddas@example.com')
+  const [password, setPassword] = useState('securePass123')
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert('Error', 'Please fill in all fields');
       return;
     }
-
     try {
-      const response = await axios.post(`${API_BASE}/api/auth/login`, {
-        email,
-        password,
-      });
-
+      const response = await loginUser(email, password);
+      // console.log("")
       if (response.data.success) {
         dispatch(
           setCredentials({
@@ -47,15 +43,15 @@ const dispatch = useDispatch();
             },
           })
         );
-        router.push("/(tabs)/Home");
+        router.push('/(tabs)/Home');
       } else {
-        Alert.alert("Error", response.data.message || "Login failed");
+        Alert.alert('Error', response.data.message || 'Login failed');
       }
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message || "Something went wrong");
+      Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
-
+//  console.log("this is base url==========",API_BASE)
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -107,12 +103,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: Colors.background,
+    paddingBottom:6,
   },
   scrollContainer: {
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 80, // Space for button
+    paddingBottom: 80, 
   },
   form: {
     flex: 1,
@@ -143,7 +140,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
     position: "absolute",
-    bottom: 60,
+    bottom: 20,
     left: 20,
     right: 20,
     marginTop: 20,

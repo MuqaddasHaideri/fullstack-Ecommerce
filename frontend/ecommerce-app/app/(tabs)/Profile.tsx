@@ -1,44 +1,45 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../redux/authSlice';
-import { Colors } from '@/constants/Colors';
-
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/authSlice";
+import { Colors } from "@/constants/Colors";
+import { getProfile } from "@/api/services";
 const Profile = () => {
   const dispatch = useDispatch();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-
-  // Uncomment when Redux is fully connected
-  // const { name, email, imageUrl } = useSelector((state) => state.auth.user || {});
-
-  // const handleLogout = () => {
-  //   dispatch(logout());
-  // };
-
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const token = useSelector((state: any) => state.auth.token);
+  const axiosProfile = async () => {
+    const response = await getProfile(token);
+    // console.log("this is response==========", response?.data);
+    setName(response?.data?.name);
+    setEmail(response?.data?.email);
+    setImageUrl(response?.data?.profilePic);
+  };
+  useEffect(() => {
+    axiosProfile();
+  }, []);
   return (
     <View style={styles.container}>
-      {/* Profile Image */}
       <Image
-        source={imageUrl ? { uri: imageUrl } : require("../../assets/images/image1.jpeg")}
+        source={
+          imageUrl
+            ? { uri: imageUrl }
+            : require("../../assets/images/image1.jpeg")
+        }
         style={styles.profileImage}
       />
 
-      {/* User Info */}
-      <Text style={styles.name}>{name || 'User Name'}</Text>
-      <Text style={styles.email}>{email || 'user@example.com'}</Text>
-
-      {/* Bottom Buttons */}
+      <Text style={styles.name}>{name || "User Name"}</Text>
+      <Text style={styles.email}>{email || "user@example.com"}</Text>
       <View style={styles.buttonContainer}>
-        {/* Edit Profile Button */}
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
 
-        {/* Logout Button */}
-        <TouchableOpacity 
-          style={[styles.button, styles.logoutButton]} 
+        <TouchableOpacity
+          style={[styles.button, styles.logoutButton]}
           // onPress={handleLogout}
         >
           <Text style={styles.buttonText}>Logout</Text>
@@ -53,12 +54,12 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    paddingTop: 80, 
+    alignItems: "center",
+    paddingTop: 80,
     backgroundColor: Colors.background,
   },
   profileImage: {
-    width: 180, // bigger profile image
+    width: 180,
     height: 180,
     borderRadius: 90,
     marginBottom: 20,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
     color: Colors.text,
   },
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
     color: Colors.smallText,
     marginBottom: 30,
     // color: Colors.text,
-    
   },
   buttonContainer: {
     position: "absolute",

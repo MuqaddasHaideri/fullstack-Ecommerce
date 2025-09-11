@@ -7,28 +7,37 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
-  Platform
+  Platform,
+  Alert
 } from 'react-native'
 import React, { useState } from 'react'
-import axios from 'axios'
 import { Colors } from '@/constants/Colors';
 import InputField from '@/components/InputField';
 import { router } from 'expo-router';
+import { signupUser } from '@/api/services';
 
 const SignUp = () => {
-  const API_BASE = process.env.EXPO_PUBLIC_BASE_URL!;
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const handleSignUp = async () => {
-    // try {
-    //   const response = await axios.post(`${API_BASE}/api/auth/signup`, { name, email, password })
-    //   console.log(response.data)
-    // } catch (error) {
-    //   console.log(error)
-    // }
-    router.push('/(tabs)/Home')
-  }
+    if (!name || !email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+    try {
+      const response = await signupUser(name, email, password);
+      console.log(response)
+      if (response.data.success) {
+        router.push('/(tabs)/Home');
+      } else {
+        Alert.alert('Error', response.data.message || 'signIn failed');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -87,13 +96,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: Colors.background,
-    paddingBottom: 80, // Space for button
+    paddingBottom:6,
   },
   scrollContainer: {
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 80, // Space for button
+    paddingBottom: 80, 
   },
   form: {
     flex: 1,
@@ -123,7 +132,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
     position: "absolute",
-    bottom: 60,
+    bottom: 20,
     left: 20,
     right: 20,
     marginTop: 20,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TextInputProps, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors';
 
 type Props = TextInputProps & {
   icon: string;
@@ -47,6 +48,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
     paddingVertical: 10,
+    color:Colors.text,
   },
   
 });
