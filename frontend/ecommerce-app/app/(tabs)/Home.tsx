@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,26 +16,17 @@ import {getProduct} from "@/api/services"
 import { useSelector, useDispatch } from "react-redux";
 const { width } = Dimensions.get("window");
 
-// const categories = [
-//   { id: "1", name: "Shoes", image: require("../../assets/images/image1.jpeg") },
-//   { id: "2", name: "Bags", image: require("../../assets/images/image2.jpeg") },
-//   { id: "3", name: "Watches", image: require("../../assets/images/image3.jpeg") },
-//   { id: "4", name: "Clothes", image: require("../../assets/images/image1.jpeg") },
-// ];
 
-// const products = Array.from({ length: 20 }, (_, i) => ({
-//   id: i.toString(),
-//   name: `Product ${i + 1}`,
-//   price: `$${(i + 1) * 5}`,
-//   image: require("../../assets/images/image3.jpeg"),
-// }));
 
 
 export default function HomeScreen() {
+  const [products,setProducts] = useState([])
   const token = useSelector((state: any) => state.auth.token);
   const getAllProducts = async()=>{
     const response = await getProduct(token);
+  
     console.log("checking list of product \n",response.data)
+    setProducts(response?.data)
   }
   useEffect (()=>{
     getAllProducts()
@@ -47,7 +38,7 @@ export default function HomeScreen() {
     <TouchableOpacity style={styles.productCard} onPress={handleProductDetail}>
       <Image source={item.image} style={styles.productImage} />
       <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productPrice}>{item.price}</Text>
+      <Text style={styles.productPrice}>${item.price}</Text>
     </TouchableOpacity>
   );
 
@@ -58,15 +49,15 @@ export default function HomeScreen() {
       {/* Categories */}
       <Catagory />
       {/* Products Grid */}
-      {/* <FlatList
+      <FlatList
         data={products}
         renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
-      /> */}
+      />
     </View>
   );
 }
