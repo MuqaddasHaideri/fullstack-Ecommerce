@@ -9,8 +9,11 @@ import { getProfile, updateProfile } from "../controllers/profileController.js";
 const router = express.Router();
 
 router.post("/signup", signupController, signupValidation);
+
 router.post("/login", loginController, loginValidation);
+
 router.get("/profile", isAuthenticated, getProfile);
+
 router.put("/profile", isAuthenticated, updateProfile);
 
 
