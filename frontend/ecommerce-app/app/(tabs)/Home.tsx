@@ -16,9 +16,6 @@ import {getProduct} from "@/api/services"
 import { useSelector, useDispatch } from "react-redux";
 const { width } = Dimensions.get("window");
 
-
-
-
 export default function HomeScreen() {
   const [products,setProducts] = useState([])
   const token = useSelector((state: any) => state.auth.token);
@@ -31,14 +28,22 @@ export default function HomeScreen() {
   useEffect (()=>{
     getAllProducts()
   },[])
-  const handleProductDetail = () => {
-    router.push("/Screens/ProductDetail");
+  const handleProductDetail = (id: string) => {
+    router.push({
+      pathname: '/Screens/ProductDetail',
+      params: { id },
+    });
   };
+
   const renderProduct = ({ item }: { item: any }) => (
-    <TouchableOpacity style={styles.productCard} onPress={handleProductDetail}>
-      <Image source={item.image} style={styles.productImage} />
-      <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productPrice}>${item.price}</Text>
+     <TouchableOpacity
+    style={styles.productCard}
+    onPress={() => handleProductDetail(item?._id)}
+  >
+      <Image source={{ uri: item.image }} style={styles.productImage} />
+      <Text style={styles.productName}>{item?.name}</Text>
+      <Text style={styles.categoryName}>{item?.category} </Text>
+      <Text style={styles.productPrice}>${item?.price}</Text>
     </TouchableOpacity>
   );
 
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
   },
 
   productCard: {
-    backgroundColor: Colors.text,
+    backgroundColor: Colors.containers,
     borderRadius: 8,
     marginBottom: 15,
     flex: 1,
@@ -87,9 +92,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   productName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
-    color: Colors.background,
+    color: Colors.text,
+  },
+  categoryName: {
+    fontSize: 14,
+    color: Colors.smallText,
   },
   productPrice: {
     fontSize: 14,

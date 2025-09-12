@@ -3,79 +3,51 @@ import React, { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useSelector } from 'react-redux';
 import { router } from 'expo-router';
+import { getCatagory, getCatagoryById } from '@/api/services';
 
 const Catagory = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Get token from Redux
+  const [id, setId] = useState();
   const token = useSelector((state: any) => state.auth.token);
 
-  const dummyCategories = [
-    { id: "1", name: "Shoes" },
-    { id: "2", name: "Bags" },
-    { id: "3", name: "Watches" },
-    { id: "4", name: "Clothes" },
-  ];
-
   const fetchCategories = async () => {
-    const API_BASE = process.env.EXPO_PUBLIC_BASE_URL!;
-    try {
-      const res = await fetch(`${API_BASE}/api/products/category`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // token from Redux
-        },
-      });
-
-      if (!res.ok) throw new Error('Failed to fetch');
-
-      const data = await res.json();
-      console.log("API Response:", data);
-
-      if (Array.isArray(data) && data.length > 0) {
-        setCategories(data);
-      } else {
-        setCategories(dummyCategories);
-      }
-    } catch (error) {
-      console.log('Error fetching categories:', error);
-      setCategories(dummyCategories);
-    } finally {
-      setLoading(false);
-    }
+ const response = await getCatagory(token);
+ setCategories(response?.data);
+console.log("checking list of catagory \n",response)
   };
 
   useEffect(() => {
-    if (token) {
-      fetchCategories();
-    } else {
-      console.log("No token found, using dummy categories");
-      setCategories(dummyCategories);
-      setLoading(false);
-    }
-  }, [token]); // refetch when token changes
+   fetchCategories()
+  }, []);
+  const handleCategoryById = async (index: number) => {
+    const categoryName = categories[index];  
+    console.log("Category name....", categoryName);
+  
+    const response = await getCatagoryById(categoryName, token); 
+    // setPro(response?.data); // if you want to display products
+    console.log("Products by category \n", response?.data);
+  };
+  
+  
+     const renderCategory = ({ item, index }: { item: any; index: number }) => (
+      <TouchableOpacity onPress={() => handleCategoryById(index)}>
+        <View style={styles.categoryItem}>
+          <Text style={styles.categoryText}>{item.name || item}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+    
 
-  const renderCategory = ({ item }: { item: any }) => (
-    // <TouchableOpacity onPress={handleProductDetail}>
-    <View style={styles.categoryItem}>
-   
-      <Text style={styles.categoryText}>{item.name || item}</Text>
-    </View>
-      //  </TouchableOpacity>
-  );
 
-  if (loading) {
-    return <ActivityIndicator style={{ marginTop: 20 }} size="large" color={Colors.primary} />;
-  }
 
   return (
     <View>
       <FlatList
         data={categories}
         renderItem={renderCategory}
-        keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+        keyExtractor={(item, index) => index.toString()}
+
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.list}

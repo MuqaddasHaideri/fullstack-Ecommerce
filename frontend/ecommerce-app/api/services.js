@@ -36,7 +36,24 @@ export const signupUser = async (name,email, password) => {
   };
 //unused
   export const getProductByID = async (id,token) => {
-    return await axios.get(`${API_BASE}${endpoints.getProducts}\ ${id}`, {
+    return await axios.get(`${API_BASE}${endpoints.getProducts}/${id} `, {
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+  };
+
+  export const getCatagory = async ( token) => {
+    return await axios.get(`${API_BASE}${endpoints.category}`, {
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+  };
+  export const getCatagoryById = async (categoryName,token) => {
+    return await axios.get(`${API_BASE}${endpoints.category}/${categoryName} `, {
       headers: { 
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
