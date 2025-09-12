@@ -60,3 +60,15 @@ export const signupUser = async (name,email, password) => {
       },
     });
   };
+// correct search function
+export const searchProduct = async (searchText, token) => {
+  return await axios.get(
+    `${API_BASE}/products/search?query=${encodeURIComponent(searchText)}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

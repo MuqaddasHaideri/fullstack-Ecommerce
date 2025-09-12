@@ -18,7 +18,6 @@ import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '@/redux/authSlice';
 import { loginUser } from '@/api/services';
-import { API_BASE } from '@/api/urls';
 const Login = () => {
 const dispatch = useDispatch();
   const [email, setEmail] = useState('muqaddas@example.com')
@@ -51,7 +50,6 @@ const dispatch = useDispatch();
       Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
     }
   };
-//  console.log("this is base url==========",API_BASE)
   return (
     <KeyboardAvoidingView
       style={styles.container}

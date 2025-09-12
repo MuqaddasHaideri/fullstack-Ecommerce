@@ -6,5 +6,6 @@ export const endpoints = {
   signup: "/api/auth/signup",
   profile: "/api/auth/profile",
   getProducts :"/api/products",
-  category :"/api/products/category"
+  category :"/api/products/category",
+  search :"/api/products/search"
 };

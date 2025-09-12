@@ -5,41 +5,44 @@ import { useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { getCatagory, getCatagoryById } from '@/api/services';
 
-const Catagory = () => {
+const Catagory = ({ selectedCategory, onCategorySelect }: { 
+  selectedCategory: string | null; 
+  onCategorySelect: (categoryName: string) => void; 
+}) => {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [id, setId] = useState();
   const token = useSelector((state: any) => state.auth.token);
 
   const fetchCategories = async () => {
- const response = await getCatagory(token);
- setCategories(response?.data);
-console.log("checking list of catagory \n",response)
+    const response = await getCatagory(token);
+    setCategories(response?.data);
+    console.log("checking list of category \n", response);
   };
 
   useEffect(() => {
-   fetchCategories()
+    fetchCategories();
   }, []);
-  const handleCategoryById = async (index: number) => {
-    const categoryName = categories[index];  
-    console.log("Category name....", categoryName);
-  
-    const response = await getCatagoryById(categoryName, token); 
-    // setPro(response?.data); // if you want to display products
-    console.log("Products by category \n", response?.data);
-  };
-  
-  
-     const renderCategory = ({ item, index }: { item: any; index: number }) => (
-      <TouchableOpacity onPress={() => handleCategoryById(index)}>
-        <View style={styles.categoryItem}>
-          <Text style={styles.categoryText}>{item.name || item}</Text>
+
+  const renderCategory = ({ item, index }: { item: any; index: number }) => {
+    const categoryName = item.name || item;
+    const isSelected = selectedCategory === categoryName;
+    
+    return (
+      <TouchableOpacity onPress={() => onCategorySelect(categoryName)}>
+        <View style={[
+          styles.categoryItem,
+          isSelected && styles.selectedCategoryItem // Apply selected style
+        ]}>
+          <Text style={[
+            styles.categoryText,
+            isSelected && styles.selectedCategoryText // Apply selected text style
+          ]}>
+            {categoryName}
+          </Text>
         </View>
       </TouchableOpacity>
     );
-    
-
-
+  };
 
   return (
     <View>
@@ -47,7 +50,6 @@ console.log("checking list of catagory \n",response)
         data={categories}
         renderItem={renderCategory}
         keyExtractor={(item, index) => index.toString()}
-
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.list}
@@ -55,6 +57,7 @@ console.log("checking list of catagory \n",response)
     </View>
   );
 };
+
 
 export default Catagory;
 
@@ -77,5 +80,13 @@ const styles = StyleSheet.create({
   },
   list: {
     marginVertical: 15,
+  },
+  selectedCategoryItem: {
+    backgroundColor: Colors.primary, 
+    borderColor: Colors.text,
+  },
+  selectedCategoryText: {
+    color: 'white', 
+    fontWeight: 'bold',
   },
 });

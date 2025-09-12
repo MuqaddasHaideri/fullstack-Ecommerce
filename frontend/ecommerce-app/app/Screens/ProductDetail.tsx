@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { AntDesign } from '@expo/vector-icons' // for heart icon
+import { AntDesign } from '@expo/vector-icons' 
 import { Colors } from '@/constants/Colors';
 import { useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
@@ -13,11 +13,8 @@ const ProductDetail = () => {
   const token = useSelector((state: any) => state.auth.token);
   const { id } = useLocalSearchParams();
   const [product,setProduct] = useState([])
-  console.log("checking id....",id)
   const getProduct = async()=>{
     const response = await getProductByID(id,token);
-  
-    console.log("checking product by id \n",response.data)
     setProduct(response?.data)
   }
 useEffect (()=>{
