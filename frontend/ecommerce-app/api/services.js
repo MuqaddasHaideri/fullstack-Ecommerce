@@ -60,7 +60,7 @@ export const signupUser = async (name,email, password) => {
       },
     });
   };
-// correct search function
+
 export const searchProduct = async (searchText, token) => {
   return await axios.get(
     `${API_BASE}/products/search?query=${encodeURIComponent(searchText)}`,
@@ -71,4 +71,36 @@ export const searchProduct = async (searchText, token) => {
       },
     }
   );
+};
+// addFavorite.ts
+export const addFavorite = async (productId, token) => {
+  return await axios.post(
+    `${API_BASE}${endpoints.favorite}`,             
+    { productId },                      
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+export const removeFavorite = async (Id, token) => {
+  axios.delete(`${API_BASE}${endpoints.favorite}/${Id} `,                     
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getUsersFavorite = async (token) => {
+  return await axios.get(`${API_BASE}${endpoints.favorite}`, {
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
 };

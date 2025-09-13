@@ -1,52 +1,60 @@
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
+import { getUsersFavorite, removeFavorite } from '@/api/services'
+import { useSelector } from 'react-redux'
 
 const Favorites = () => {
-  const [favorites, setFavorites] = useState([
-    {
-      id: '1',
-      name: 'Nike Air Max',
-      category: 'Shoes',
-      price: '$120',
-      image: 'https://via.placeholder.com/150',
-    },
-    {
-      id: '2',
-      name: 'Apple Watch',
-      category: 'Accessories',
-      price: '$350',
-      image: 'https://via.placeholder.com/150',
-    },
-  ])
-
-  const removeFromFavorites = (id: string) => {
-    setFavorites(prev => prev.filter(item => item.id !== id))
-  }
-
+  const [favorites, setFavorites] = useState([])
+  const [isFav, setIsFav] = useState(false);
+  const token = useSelector((state: any) => state.auth.token);
+  // const removeFromFavorites = (id: string) => {
+  //   setFavorites(prev => prev.filter(item => item.id !== id))
+  // }
+  
+  const getUserFav = async () => {
+    const response = await getUsersFavorite(token);
+    console.log("checking list of favorites>>>>>>> \n", response.data);
+    setFavorites(response?.data)
+    
+  };
+  const removeFav = async (favoriteId: string) => {
+    try {
+      await removeFavorite(favoriteId, token); // DELETE /favorites/:favoriteId
+      setFavorites(prev => prev.filter(item => item._id !== favoriteId));
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+    }
+  };
+  
+  
+  
+  useEffect(()=>{
+getUserFav();
+  },[token])
   const renderItem = ({ item }: any) => (
     <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item?.productId?.image }} style={styles.image} />
       <View style={styles.info}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.category}>{item.category}</Text>
-        <Text style={styles.price}>{item.price}</Text>
+        <Text style={styles.name}>{item.productId?.name}</Text>
+        <Text style={styles.category}>{item.productId?.category}</Text>
+        <Text style={styles.price}>{item.productId?.price}</Text>
       </View>
-      {/* Heart button to remove */}
-      <TouchableOpacity onPress={() => removeFromFavorites(item.id)}>
-        <AntDesign name="heart" size={28} color="red" />
-      </TouchableOpacity>
-    </View>
-  )
+      <TouchableOpacity onPress={() => removeFav(item._id)}>
+  <AntDesign name="heart" size={28} color="red" />
+</TouchableOpacity>
 
+    </View>
+  );
+  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>My Favorites</Text>
       {favorites.length > 0 ? (
         <FlatList
           data={favorites}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item._id}
           renderItem={renderItem}
           contentContainerStyle={{ paddingBottom: 20 }}
           style={styles.listStyle}

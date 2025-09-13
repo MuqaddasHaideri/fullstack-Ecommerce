@@ -49,13 +49,11 @@ export default function HomeScreen() {
     setSearchQuery(query);
     if (query.trim() === "") {
       if (selectedCategory) {
-        // Re-apply category filter if any category is selected
         filterProductsByCategory(selectedCategory);
       } else {
         setFilteredProducts(products);
       }
     } else {
-      // Filter products locally based on search query
       const filtered = products.filter(product =>
         product.name.toLowerCase().includes(query.toLowerCase()) ||
         (product.category && product.category.toLowerCase().includes(query.toLowerCase()))
@@ -68,7 +66,6 @@ export default function HomeScreen() {
   const handleClearSearch = () => {
     setSearchQuery("");
     if (selectedCategory) {
-      // Re-apply category filter
       filterProductsByCategory(selectedCategory);
     } else {
       setFilteredProducts(products);
@@ -112,8 +109,8 @@ export default function HomeScreen() {
         renderItem={renderProduct}
         keyExtractor={(item) => item._id}
         numColumns={2}
-        columnWrapperStyle={{ justifyContent: "space-between" }}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -127,13 +124,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     paddingHorizontal: 10,
   },
-
+  columnWrapper: {
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  listContent: {
+    paddingBottom: 20,
+  },
   productCard: {
     backgroundColor: Colors.containers,
     borderRadius: 8,
-    marginBottom: 15,
-    flex: 1,
-    marginHorizontal: 5,
+    width: (width - 30) / 2, 
     padding: 10,
     alignItems: "center",
     elevation: 2,
@@ -148,15 +149,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: Colors.text,
+    textAlign: "center",
   },
   categoryName: {
     fontSize: 14,
     color: Colors.smallText,
+    textAlign: "center",
   },
   productPrice: {
     fontSize: 14,
     color: Colors.primary,
     fontWeight: "600",
+    textAlign: "center",
   },
   selectedCategory: {
     fontSize: 16,

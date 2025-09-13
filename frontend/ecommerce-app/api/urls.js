@@ -7,5 +7,6 @@ export const endpoints = {
   profile: "/api/auth/profile",
   getProducts :"/api/products",
   category :"/api/products/category",
-  search :"/api/products/search"
+  search :"/api/products/search",
+  favorite:"/api/products/favorites"
 };

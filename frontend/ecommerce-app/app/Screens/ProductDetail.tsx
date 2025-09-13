@@ -1,35 +1,124 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { AntDesign } from '@expo/vector-icons' 
-import { Colors } from '@/constants/Colors';
-import { useLocalSearchParams } from 'expo-router';
-import { useSelector } from 'react-redux';
-import { getProductByID } from '@/api/services';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import React, { useState, useCallback } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useSelector } from "react-redux";
+import {
+  addFavorite,
+  getProductByID,
+  removeFavorite,
+} from "@/api/services";
 
 const { height } = Dimensions.get("window");
 
+interface RootState {
+  auth: {
+    token: string;
+  };
+}
+
 const ProductDetail = () => {
-  const [isFav, setIsFav] = useState(false);
-  const token = useSelector((state: any) => state.auth.token);
+  const token = useSelector((state: RootState) => state.auth.token);
   const { id } = useLocalSearchParams();
-  const [product,setProduct] = useState([])
-  const getProduct = async()=>{
-    const response = await getProductByID(id,token);
-    setProduct(response?.data)
+
+  const [product, setProduct] = useState<any>(null);
+  const [isFav, setIsFav] = useState(false);
+  const [favoriteId, setFavoriteId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // always get product + fav info fresh
+  const getProduct = async () => {
+    try {
+      setLoading(true);
+      const response = await getProductByID(id, token);
+      const data = response?.data || {};
+      setProduct(data);
+      // map your API fields here:
+      setIsFav(Boolean(data?.favorited));
+   
+    } catch (err) {
+      console.error("Error fetching product:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // add favorite
+  const addToFav = async () => {
+    try {
+      const response = await addFavorite(id, token);
+      setIsFav(true);
+      setFavoriteId(response.data._id);
+    } catch (err) {
+      console.error("Error adding favorite:", err);
+    }
+  };
+
+  // remove favorite — now always looks up latest fav id before calling delete
+  const removeFav = async () => {
+    try {
+      let currentFavId = favoriteId;
+      if (!currentFavId) {
+        // force refresh to get id
+        await getProduct();
+        currentFavId = favoriteId;
+      }
+      if (!currentFavId) {
+        console.warn("No favoriteId found for product");
+        return;
+      }
+      await removeFavorite(currentFavId, token);
+      setIsFav(false);
+      setFavoriteId(null);
+    } catch (err) {
+      console.error("Error removing favorite:", err);
+    }
+  };
+
+  const handleFavoritePress = () => {
+    if (loading) return;
+    if (isFav) {
+      removeFav();
+    } else {
+      addToFav();
+    }
+  };
+
+  // refetch each time screen focuses
+  useFocusEffect(
+    useCallback(() => {
+      getProduct();
+    }, [id, token])
+  );
+
+  if (!product) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading product...</Text>
+      </View>
+    );
   }
-useEffect (()=>{
-  getProduct();
-},[id])
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View>
           <Image source={{ uri: product?.image }} style={styles.productImage} />
-          <TouchableOpacity 
-            style={styles.heartIcon} 
-            onPress={() => setIsFav(!isFav)}
-          >
-            <AntDesign name={isFav ? "heart" : "hearto"} size={28} color={isFav ? "red" : "white"} />
+          <TouchableOpacity style={styles.heartIcon} onPress={handleFavoritePress}>
+            <AntDesign
+              name={isFav ? "heart" : "hearto"}
+              size={28}
+              color={isFav ? "red" : "white"}
+            />
           </TouchableOpacity>
         </View>
         <View style={styles.infoContainer}>
@@ -45,20 +134,17 @@ useEffect (()=>{
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default ProductDetail
+export default ProductDetail;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
+  container: { flex: 1, backgroundColor: Colors.background },
   productImage: {
-    width: '100%',
-    height: height * 0.4, 
-    resizeMode: 'cover',
+    width: "100%",
+    height: height * 0.4,
+    resizeMode: "cover",
   },
   heartIcon: {
     position: "absolute",
@@ -68,31 +154,21 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 50,
   },
-  infoContainer: {
-    padding: 20,
-  },
+  infoContainer: { padding: 20 },
   name: {
     color: Colors.text,
     fontSize: 26,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
-  category: {
-    fontSize: 18,
-    color: Colors.text,
-    marginBottom: 10,
-  },
+  category: { fontSize: 18, color: Colors.text, marginBottom: 10 },
   price: {
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.primary,
     marginBottom: 15,
   },
-  description: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: Colors.smallText,
-  },
+  description: { fontSize: 16, lineHeight: 22, color: Colors.smallText },
   cartContainer: {
     position: "absolute",
     bottom: 24,
@@ -112,6 +188,6 @@ const styles = StyleSheet.create({
   cartButtonText: {
     color: Colors.text,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-})
+});
