@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import React, { useState, useCallback } from "react";
+
 import { AntDesign } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useLocalSearchParams, useFocusEffect } from "expo-router";
@@ -52,7 +53,6 @@ const ProductDetail = () => {
     }
   };
 
-  // add favorite
   const addToFav = async () => {
     try {
       const response = await addFavorite(id, token);
@@ -63,12 +63,10 @@ const ProductDetail = () => {
     }
   };
 
-  // remove favorite — now always looks up latest fav id before calling delete
   const removeFav = async () => {
     try {
       let currentFavId = favoriteId;
       if (!currentFavId) {
-        // force refresh to get id
         await getProduct();
         currentFavId = favoriteId;
       }
@@ -93,7 +91,6 @@ const ProductDetail = () => {
     }
   };
 
-  // refetch each time screen focuses
   useFocusEffect(
     useCallback(() => {
       getProduct();
@@ -115,9 +112,10 @@ const ProductDetail = () => {
           <Image source={{ uri: product?.image }} style={styles.productImage} />
           <TouchableOpacity style={styles.heartIcon} onPress={handleFavoritePress}>
             <AntDesign
-              name={isFav ? "heart" : "hearto"}
+              name="heart"
               size={28}
               color={isFav ? "red" : "white"}
+              style={{ opacity: isFav ? 1 : 0.3 }}
             />
           </TouchableOpacity>
         </View>
