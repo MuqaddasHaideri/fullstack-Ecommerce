@@ -96,6 +96,17 @@ export const removeFavorite = async (Id, token) => {
   );
 };
 
+export const filterProducts = async (sortType, token) => {
+  return await axios.get(
+    `${API_BASE}${endpoints.filter}?sort=${sortType}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
 export const getUsersFavorite = async (token) => {
   return await axios.get(`${API_BASE}${endpoints.favorite}`, {
     headers: { 

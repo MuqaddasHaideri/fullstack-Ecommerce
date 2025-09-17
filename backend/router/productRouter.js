@@ -1,5 +1,5 @@
 import express from "express";
-import { getProducts, productById, productbycategory, category,searchProduct, addFavorite, removeFavorite,getUserFavorites} from "../controllers/productController.js";
+import { getProducts, productById, productbycategory, category,searchProduct, addFavorite, removeFavorite,getUserFavorites, filterProducts} from "../controllers/productController.js";
 import { isAuthenticated } from "../middleware/verifyAPI.js";
 
 const productRouter = express.Router();
@@ -12,6 +12,7 @@ productRouter.get("/products", isAuthenticated, getProducts);
 productRouter.get("/products/category", isAuthenticated, category);
 productRouter.get("/products/category/:category", isAuthenticated, productbycategory);
 productRouter.get("/products/search", isAuthenticated, searchProduct);
+productRouter.get("/products/filter", isAuthenticated, filterProducts);
 productRouter.get("/products/:id", isAuthenticated, productById);
 
 export default productRouter;

@@ -23,9 +23,9 @@ interface CarouselProps {
 
 const Carousel: React.FC<CarouselProps> = ({
   images = [
+    require("../assets/images/image4.jpg"),
     require("../assets/images/image1.jpeg"),
-    require("../assets/images/image1.jpeg"),
-    require("../assets/images/image1.jpeg"),
+    require("../assets/images/image3.jpeg"),
   ],
   autoPlay = true,
   autoPlayInterval = 3000,

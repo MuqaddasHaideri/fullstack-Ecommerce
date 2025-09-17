@@ -1,5 +1,5 @@
 import ProductSchemaModel from "../models/productSchema.js";
-import favoriteSchemaModel from "../models/favoriteSchema.js"; // adjust the path
+import favoriteSchemaModel from "../models/favoriteSchema.js"; 
 const getProducts = async (req, res) => {
     try {
         const products = await ProductSchemaModel.find();
@@ -137,5 +137,21 @@ const getUserFavorites = async (req, res) => {
       res.status(500).json({ message: "Error fetching favorites" });
     }
   };
+ const filterProducts= async (req, res) => {
+    try {
+     
+      const sort = req.query.sort; 
   
-export { getProducts, productById, productbycategory, category,searchProduct,removeFavorite,getUserFavorites,addFavorite };
+      let sortOrder = 1; 
+      if (sort === "desc") sortOrder = -1; 
+  
+      const products = await ProductSchemaModel.find().sort({ price: sortOrder });
+  
+      res.status(200).json(products);
+    } catch (error) {
+      console.error("Error filtering products by price:", error);
+      res.status(500).json({ message: "Error filtering products" });
+    }
+  };
+  
+export { getProducts, productById, productbycategory, category,searchProduct,removeFavorite,getUserFavorites,addFavorite,filterProducts};

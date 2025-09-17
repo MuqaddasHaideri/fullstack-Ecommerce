@@ -8,5 +8,6 @@ export const endpoints = {
   getProducts :"/api/products",
   category :"/api/products/category",
   search :"/api/products/search",
-  favorite:"/api/products/favorites"
+  favorite:"/api/products/favorites",
+    filter:"/api/products/filter"
 };

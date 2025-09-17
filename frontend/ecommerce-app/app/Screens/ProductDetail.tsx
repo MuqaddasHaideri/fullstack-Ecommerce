@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import React, { useState, useCallback } from "react";
 
@@ -17,6 +19,7 @@ import {
   addFavorite,
   getProductByID,
   removeFavorite,
+  getUsersFavorite,
 } from "@/api/services";
 
 const { height } = Dimensions.get("window");
@@ -27,27 +30,66 @@ interface RootState {
   };
 }
 
+interface Product {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+  image: string;
+  favorited?: boolean;
+  favoriteId?: string;
+}
+
 const ProductDetail = () => {
   const token = useSelector((state: RootState) => state.auth.token);
   const { id } = useLocalSearchParams();
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [isFav, setIsFav] = useState(false);
   const [favoriteId, setFavoriteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
-  // always get product + fav info fresh
+  // Get user's favorites to check if this product is already favorited
+  const checkIfFavorited = async (productId: string) => {
+    try {
+      const response = await getUsersFavorite(token);
+      const favorites = response.data || [];
+      
+      // Find if this product is in favorites
+      const favorite = favorites.find((fav: any) => 
+        fav.productId?._id === productId || fav.productId === productId
+      );
+      
+      if (favorite) {
+        setIsFav(true);
+        setFavoriteId(favorite._id);
+        return favorite._id;
+      } else {
+        setIsFav(false);
+        setFavoriteId(null);
+        return null;
+      }
+    } catch (err) {
+      console.error("Error checking favorites:", err);
+      return null;
+    }
+  };
+
   const getProduct = async () => {
     try {
       setLoading(true);
       const response = await getProductByID(id, token);
       const data = response?.data || {};
       setProduct(data);
-      // map your API fields here:
-      setIsFav(Boolean(data?.favorited));
-   
+      
+      // Check if this product is in user's favorites
+      await checkIfFavorited(data._id || id);
+      
     } catch (err) {
       console.error("Error fetching product:", err);
+      Alert.alert("Error", "Failed to load product");
     } finally {
       setLoading(false);
     }
@@ -55,35 +97,54 @@ const ProductDetail = () => {
 
   const addToFav = async () => {
     try {
+      setProcessing(true);
       const response = await addFavorite(id, token);
-      setIsFav(true);
-      setFavoriteId(response.data._id);
-    } catch (err) {
+      
+      if (response.data && response.data._id) {
+        setIsFav(true);
+        setFavoriteId(response.data._id);
+        Alert.alert("Success", "Added to favorites!");
+      } else {
+        throw new Error("Invalid response from server");
+      }
+    } catch (err: any) {
       console.error("Error adding favorite:", err);
+      Alert.alert("Error", err.response?.data?.message || "Failed to add favorite");
+    } finally {
+      setProcessing(false);
     }
   };
 
   const removeFav = async () => {
     try {
-      let currentFavId = favoriteId;
-      if (!currentFavId) {
-        await getProduct();
-        currentFavId = favoriteId;
+      setProcessing(true);
+      
+      // If we don't have favoriteId, try to get it first
+      let favId = favoriteId;
+      if (!favId) {
+        favId = await checkIfFavorited(product?._id || id);
       }
-      if (!currentFavId) {
-        console.warn("No favoriteId found for product");
+      
+      if (!favId) {
+        Alert.alert("Error", "Favorite not found");
         return;
       }
-      await removeFavorite(currentFavId, token);
+      
+      await removeFavorite(favId, token);
       setIsFav(false);
       setFavoriteId(null);
-    } catch (err) {
+      Alert.alert("Success", "Removed from favorites!");
+    } catch (err: any) {
       console.error("Error removing favorite:", err);
+      Alert.alert("Error", err.response?.data?.message || "Failed to remove favorite");
+    } finally {
+      setProcessing(false);
     }
   };
 
   const handleFavoritePress = () => {
-    if (loading) return;
+    if (processing || loading) return;
+    
     if (isFav) {
       removeFav();
     } else {
@@ -97,10 +158,19 @@ const ProductDetail = () => {
     }, [id, token])
   );
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+        <Text style={{ marginTop: 10 }}>Loading product...</Text>
+      </View>
+    );
+  }
+
   if (!product) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading product...</Text>
+        <Text>Product not found</Text>
       </View>
     );
   }
@@ -109,14 +179,25 @@ const ProductDetail = () => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View>
-          <Image source={{ uri: product?.image }} style={styles.productImage} />
-          <TouchableOpacity style={styles.heartIcon} onPress={handleFavoritePress}>
-            <AntDesign
-              name="heart"
-              size={28}
-              color={isFav ? "red" : "white"}
-              style={{ opacity: isFav ? 1 : 0.3 }}
-            />
+          <Image 
+            source={{ uri: product?.image }} 
+            style={styles.productImage} 
+            onError={() => console.log("Image failed to load")}
+          />
+          <TouchableOpacity 
+            style={styles.heartIcon} 
+            onPress={handleFavoritePress}
+            disabled={processing}
+          >
+            {processing ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <AntDesign
+                name={isFav ? "heart" : "heart"}
+                size={28}
+                color={isFav ? "red" : "white"}
+              />
+            )}
           </TouchableOpacity>
         </View>
         <View style={styles.infoContainer}>
@@ -143,14 +224,19 @@ const styles = StyleSheet.create({
     width: "100%",
     height: height * 0.4,
     resizeMode: "cover",
+    backgroundColor: Colors.background, // Fallback background
   },
   heartIcon: {
     position: "absolute",
     top: 20,
     right: 20,
-    backgroundColor: Colors.background,
-    padding: 8,
-    borderRadius: 50,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 10,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 50,
   },
   infoContainer: { padding: 20 },
   name: {
@@ -159,14 +245,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
-  category: { fontSize: 18, color: Colors.text, marginBottom: 10 },
+  category: { 
+    fontSize: 18, 
+    color: Colors.smallText, 
+    marginBottom: 10,
+    textTransform: 'capitalize',
+  },
   price: {
     fontSize: 22,
     fontWeight: "600",
     color: Colors.primary,
     marginBottom: 15,
   },
-  description: { fontSize: 16, lineHeight: 22, color: Colors.smallText },
+  description: { 
+    fontSize: 16, 
+    lineHeight: 22, 
+    color: Colors.smallText,
+    marginTop: 10,
+  },
   cartContainer: {
     position: "absolute",
     bottom: 24,
