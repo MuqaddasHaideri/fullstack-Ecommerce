@@ -66,7 +66,7 @@ export default function HomeScreen() {
     }
   };
 
-  // Clear search
+
   const handleClearSearch = () => {
     setSearchQuery("");
     if (selectedCategory) {
