@@ -20,6 +20,7 @@ import {
   getProductByID,
   removeFavorite,
   getUsersFavorite,
+  addToCart,
 } from "@/api/services";
 
 const { height } = Dimensions.get("window");
@@ -149,14 +150,24 @@ const ProductDetail = () => {
       removeFav();
     } else {
       addToFav();
-    }
-  };
-
+    }}
+    const addToCartHandle = async () => {
+      try {
+        const quantity = 1;
+        // get userId from your Redux or AsyncStorage
+        const response = await addToCart(  id,quantity,token);
+        console.log("Added to cart:", response.data);
+      } catch (err: any) {
+        console.error("Error adding to cart:", err);
+      }
+    };
+    
   useFocusEffect(
     useCallback(() => {
       getProduct();
-    }, [id, token])
+    }, [id])
   );
+  
 
   if (loading) {
     return (
@@ -208,7 +219,8 @@ const ProductDetail = () => {
         </View>
       </ScrollView>
       <View style={styles.cartContainer}>
-        <TouchableOpacity style={styles.cartButton}>
+        <TouchableOpacity style={styles.cartButton}
+        onPress={addToCartHandle}>
           <Text style={styles.cartButtonText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>

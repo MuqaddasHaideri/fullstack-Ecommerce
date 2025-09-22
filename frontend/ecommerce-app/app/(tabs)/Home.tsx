@@ -128,12 +128,12 @@ export default function HomeScreen() {
       onClose={() => setShowFilter(false)}
       onFilter={handleFilterSelect}
     />
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.iconButton}
             onPress={handleFavoritesPress}
           >
             <AntDesign name="heart" size={24} color={Colors.text} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
       {/* Banner Carousel */}

@@ -115,3 +115,48 @@ export const getUsersFavorite = async (token) => {
     },
   });
 };
+export const addToCart = async (productId, quantity, token) => {
+  return await axios.post(
+    `${API_BASE}${endpoints.addToCart}`,
+    { productId, quantity },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  // console.log("checking the res from the service file ===", res)
+};
+
+export const getCartItems = async (token) => {
+  return await axios.get(
+    `${API_BASE}${endpoints.addToCart}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+export const removeFromCart = async (itemId, token) => {
+  return await axios.delete(
+    `${API_BASE}${endpoints.addToCart}/${itemId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+// services.ts
+export const updateCartQuantity = (cartItemId, quantity, token) => {
+  return axios.put(`${API_BASE}/products/cart/${cartItemId}/quantity`, 
+    { quantity },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+};
